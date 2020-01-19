@@ -4,65 +4,105 @@ const questionsList = [
     {
         type: 'textInput',
         questionText: '1+1?',
-        corectAnswer: '2'
+        corectAnswer: '2',
+        name: 'qstn1'
     },
     {
         type: 'checkbox',
         questionText: '2+2 and 1+1?',
         labels: [1,2,3,4,5],
-        corectAnswer: '2'
+        corectAnswer: '2',
+        name: 'qstn2'
     },
     {
         type: 'radio',
         questionText: '3*3?',
         labels: [7,8,9,10],
-        corectAnswer: '9'
+        corectAnswer: '9',
+        name: 'qstn3'
     },
     {
         type: 'select',
         questionText: '5+15?',
         options: [10,20,30,40],
-        corectAnswer: '20'
+        corectAnswer: '20',
+        name: 'qstn4'
     }
 ]
 
-// const result = {
-//     correct: 0,
-//     uncorrect: 0
-// }
-
 export default class Questions extends Component {
+    onChange = e => {
+        const answers = this.getAnswers(e)
+        this.saveToSessionStorage(answers)
+    }
+    
     onSubmit = e => {
-        // e.preventDefault();
-        for (let i = 0; i < e.currentTarget.elements['huy'].length; i++) {
-            if (e.currentTarget.elements['huy'][i].checked) {
-                console.log(e.currentTarget.elements['huy'][i].value)
+        console.log(1)
+    }
+
+    saveToSessionStorage = answers => {
+        sessionStorage.setItem("answers", JSON.stringify(answers));
+    }
+
+    getAnswers = e => {
+        const answers = {};
+        
+        const chekers = {
+            textInput: (field, fieldName) => {
+                answers[fieldName]=field.value
+            },
+            checkbox: (fields, fieldName) => {
+                answers[fieldName] = [];
+                for (let i = 0; i < fields.length; i++) {
+                    if (fields[i].checked) {
+                        answers[fieldName].push(fields[i].value)
+                    }
+                }
+                answers[fieldName] = answers[fieldName].join(',')
+            },
+            radio: (fields, fieldName) => {
+                for (let i = 0; i < fields.length; i++) {
+                    if (fields[i].checked) {
+                        answers[fieldName]= fields[i].value
+                    }
+                }
+            },
+            select: (fields, fieldName) => {
+                for (let i = 0; i < fields.length; i++) {
+                    if (fields[i].selected) {
+                        answers[fieldName]= fields[i].value
+                    }
+                }
             }
         }
-    }
-    render() {
-        console.log(111)
-        return (
-            <form onSubmit={this.onSubmit} onChange={this.onSubmit}>
-           { questionsList.map( question => {
-               console.log(question)
-                switch(question.type) {
-                    case 'textInput':
-                        return <TextInput questionText={question.questionText}/>;
-                        break;
-                    case 'checkbox':
-                        return <Checkbox questionText={question.questionText} labels={question.labels}/>;
-                        break;
-                    case 'radio':
-                        return <RadioInput questionText={question.questionText} labels={question.labels}/>;
-                        break;
-                    case 'select':
-                        return <Select questionText={question.questionText} options={question.options}/>;
-                        break; 
-                }
-            })
+        
+        questionsList.map( question => {
+            const { elements } = e.currentTarget;
+            const checker = chekers[question.type]
+            checker(elements[question.name], question.name)
             }
-            <button>Submit</button>
+        )
+
+        return answers;
+    }
+
+    render() {
+        const questionsMap = {
+            textInput: TextInput,
+            checkbox: Checkbox,
+            radio: RadioInput,
+            select: Select
+        };
+
+        return (
+            <form onSubmit={this.onSubmit} onChange={this.onChange}>
+                { 
+                    questionsList.map( question => {
+                        const TagName = questionsMap[question.type];
+                        return <TagName {...question} />
+                    })
+                }
+                <button>Submit</button>
             </form>
     )}
 }
@@ -72,7 +112,11 @@ class TextInput extends Component {
         return (
             <div>
                 <p>{this.props.questionText}</p>    
-                <input type="text" size="30"></input>
+                <input
+                    type="text"
+                    size="30"
+                    name={this.props.name}
+                ></input>
             </div>
         )
     }
@@ -80,11 +124,22 @@ class TextInput extends Component {
 
 class Checkbox extends Component {
     render() {
+        const { questionText, labels, name } = this.props;
         return (
             <div>
-                <p>{this.props.questionText}</p>
-                {this.props.labels.map( label => {
-                    return <input type="checkbox" name={'huy'} id={`answer:${label}`} value={label}></input>
+                <p>{questionText}</p>
+                {labels.map((label, idx) => {
+                    return (
+                            <div key={`${name}${idx}`}>
+                                <label htmlFor={`answer_${label}`}>{label}</label>
+                                <input
+                                    type="checkbox"
+                                    name={name}
+                                    id={`answer:${label}`}
+                                    value={label}
+                                ></input>
+                            </div>
+                        )
                 })}
             </div>
         )
@@ -93,24 +148,22 @@ class Checkbox extends Component {
 
 class RadioInput extends Component {
     render() {
-        const name = this.props.questionText.replace(/ /g, '')
-        const selectedValue = localStorage.getItem(name);
-        
+        // const name = this.props.questionText.replace(/ /g, '')
+        // const selectedValue = localStorage.getItem(name);
         return (
-            <div style={{ display: 'flex' }}>
+            <div>
                 <p>{this.props.questionText}</p>
                 {this.props.labels.map( label => {
-                    const isChecked = Number(selectedValue) === label
-
+                    // const isChecked = Number(selectedValue) === label
                     return (
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div>
                             <label htmlFor={`answer_${label}`}>{label}</label>
                             <input 
                                 type="radio" 
                                 value={label} 
-                                name={name} 
+                                name={this.props.name} 
                                 id={`answer_${label}`}
-                                checked={isChecked}
+                                // checked={isChecked}
                             ></input>
                         </div>
                     )
@@ -125,7 +178,8 @@ class Select extends Component {
         return (
             <div>
                 <p>{this.props.questionText}</p>
-                <select>
+                <select name={this.props.name}>
+                    <option value='' disabled selected={true}>Choose your answer</option>
                     {this.props.options.map( option => {
                        return <option value={option}>{option}</option>
                     })}
