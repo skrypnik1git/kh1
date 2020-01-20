@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 const questionsList = [
     {
@@ -31,11 +31,21 @@ const questionsList = [
     }
 ]
 
-export default class Questions extends Component {
-
+class Questions extends Component {
     state = {
-        isModalOpen: false
+        isModalOpen: false,
+        initialValues: {},
     }
+
+    componentDidMount() {
+        const initialValues = JSON.parse(sessionStorage.getItem('answers'));
+        if (!initialValues) {
+            return false;
+        }
+
+        this.setState({ initialValues });
+    }
+
 
     showModal = isModalOpen => this.setState({ isModalOpen })
 
@@ -62,9 +72,7 @@ export default class Questions extends Component {
         const {undoneQuestions} = this.getAnswers(e)
         console.log(undoneQuestions)
         undoneQuestions > 0 ?
-        this.setState({isModalOpen: true})
-        :
-        console.log('worked')
+        this.setState({isModalOpen: true}) : this.props.history.push('/result');
     }
 
     saveToSessionStorage = answers => {
@@ -152,7 +160,14 @@ export default class Questions extends Component {
                 { 
                     questionsList.map( (question,idx) => {
                         const TagName = questionsMap[question.type];
-                        return <TagName {...question} key={`${question.type}${idx}`}/>
+                        const { initialValues } = this.state;
+                        const initialValue = initialValues[question.name];
+
+                        return <TagName 
+                                    {...question} 
+                                    initialValue={initialValue} 
+                                    key={`${question.type}${idx}`}
+                                />
                     })
                 }
                 <button>Submit</button>
@@ -165,9 +180,12 @@ export default class Questions extends Component {
     )}
 }
 
+export default withRouter(Questions)
+
 class TextInput extends Component {
     render() {
-        const { questionText, name } = this.props;
+        const { questionText, name, initialValue } = this.props;
+
         return (
             <div>
                 <p>{questionText}</p>    
@@ -175,6 +193,7 @@ class TextInput extends Component {
                     type="text"
                     size="30"
                     name={name}
+                    defaultValue={initialValue || ''}
                 ></input>
             </div>
         )
@@ -182,12 +201,41 @@ class TextInput extends Component {
 }
 
 class Checkbox extends Component {
+    state = {
+        checkedFields: [],
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.initialValue && !state.checkedFields.length) {
+            const checkedFields = props.initialValue.split(',');
+            return { checkedFields };
+        }
+        return null;
+    }
+
+    onChange = e => {
+        const { checked, value } = e.currentTarget;
+        const { checkedFields } = this.state;
+        
+        if (!checked) {
+            checkedFields.splice(checkedFields.indexOf(value), 1);
+        } else {
+            checkedFields.push(value)
+        }
+
+        this.setState({ checkedFields });
+    }
+
     render() {
         const { questionText, labels, name } = this.props;
+        const { checkedFields } = this.state;
+
         return (
             <div>
                 <p>{questionText}</p>
                 {labels.map((label, idx) => {
+                    const isChecked = checkedFields.includes(String(label))
+
                     return (
                             <div key={`${name}${idx}`}>
                                 <label htmlFor={`answer_${label}`}>{label}</label>
@@ -196,6 +244,8 @@ class Checkbox extends Component {
                                     name={name}
                                     id={`answer:${label}`}
                                     value={label}
+                                    checked={isChecked}
+                                    onChange={this.onChange}
                                 ></input>
                             </div>
                         )

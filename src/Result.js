@@ -12,6 +12,7 @@ export default class Result extends Component {
     }
 
     render() {
+        console.log('REDER')
         return (
             <div>
                 <div>
