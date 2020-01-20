@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import Questions from './Questions.js'
-import { BrowserRouter } from 'react-router-dom';
+import Result from './Result.js'
+import { BrowserRouter, Route } from 'react-router-dom';
 
 
 class App extends Component {
@@ -9,7 +10,8 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div>
-          <Questions /> 
+          <Route exact path='/' component={Questions}/>
+          <Route path='/result' component={Result}/>
         </div>
       </BrowserRouter>
     );

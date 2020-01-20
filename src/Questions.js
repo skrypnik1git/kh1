@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Link } from 'react-router-dom';
 
 const questionsList = [
     {
@@ -37,10 +38,6 @@ export default class Questions extends Component {
     }
 
     showModal = isModalOpen => this.setState({ isModalOpen })
-
-    onConfirm = () => {
-        console.log('worked')
-    }
 
     checkAnswersForCheckbox = (userAnswers, correctAnswers) => {
         let countOfCorrectAnswers = 0
@@ -162,7 +159,6 @@ export default class Questions extends Component {
             </form>
             <ModalWindow 
             isOpen={this.state.isModalOpen}
-            onConfirm={this.onConfirm}
             onClose={() => this.showModal(false)}
             />
             </>
@@ -256,7 +252,7 @@ class Select extends Component {
 class ModalWindow extends Component {
 
     render() {
-        const { isOpen, onConfirm, onClose } = this.props;
+        const { isOpen, onClose } = this.props;
         return isOpen ? (
                 <div>
                     <div className="cover-div">
@@ -266,8 +262,9 @@ class ModalWindow extends Component {
                             Delete this Task?
                         </div>
                         <div className="cover-btns">
-                            <input type="button" value="Ok" className="btn blue-btn" onClick={onConfirm}>
-                            </input>
+                            <Link className="btn blue-btn" to='/result'>
+                                Ok
+                            </Link >
                             <input type="button" value="Cancel" className="btn blue-red" onClick={onClose}>
                             </input>
                         </div>
