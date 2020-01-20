@@ -32,6 +32,16 @@ const questionsList = [
 
 export default class Questions extends Component {
 
+    state = {
+        isModalOpen: false
+    }
+
+    showModal = isModalOpen => this.setState({ isModalOpen })
+
+    onConfirm = () => {
+        console.log('worked')
+    }
+
     checkAnswersForCheckbox = (userAnswers, correctAnswers) => {
         let countOfCorrectAnswers = 0
         userAnswers.forEach(asnwer => {
@@ -51,7 +61,13 @@ export default class Questions extends Component {
     }
     
     onSubmit = e => {
-        console.log(1)
+        e.preventDefault()
+        const {undoneQuestions} = this.getAnswers(e)
+        console.log(undoneQuestions)
+        undoneQuestions > 0 ?
+        this.setState({isModalOpen: true})
+        :
+        console.log('worked')
     }
 
     saveToSessionStorage = answers => {
@@ -134,6 +150,7 @@ export default class Questions extends Component {
         };
 
         return (
+            <>
             <form onSubmit={this.onSubmit} onChange={this.onChange}>
                 { 
                     questionsList.map( (question,idx) => {
@@ -143,6 +160,12 @@ export default class Questions extends Component {
                 }
                 <button>Submit</button>
             </form>
+            <ModalWindow 
+            isOpen={this.state.isModalOpen}
+            onConfirm={this.onConfirm}
+            onClose={() => this.showModal(false)}
+            />
+            </>
     )}
 }
 
@@ -228,5 +251,28 @@ class Select extends Component {
                 </select>
             </div>
         )
+    }
+}
+class ModalWindow extends Component {
+
+    render() {
+        const { isOpen, onConfirm, onClose } = this.props;
+        return isOpen ? (
+                <div>
+                    <div className="cover-div">
+                    </div>
+                    <div className="confirmation">
+                        <div className="text-for-cover">
+                            Delete this Task?
+                        </div>
+                        <div className="cover-btns">
+                            <input type="button" value="Ok" className="btn blue-btn" onClick={onConfirm}>
+                            </input>
+                            <input type="button" value="Cancel" className="btn blue-red" onClick={onClose}>
+                            </input>
+                        </div>
+                    </div>
+                </div>
+            ) : null
     }
 }
