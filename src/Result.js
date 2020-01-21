@@ -7,12 +7,14 @@ export default class Result extends Component {
     }
 
     counterOfcorrectAnswers = () => { 
-        const {correctAnswer} = JSON.parse(sessionStorage.getItem('answers'))
-        return `You got ${correctAnswer} correct answer${correctAnswer <= 1 ? '' : 's'}`
+        if (sessionStorage.getItem('answers')) {
+            const {correctAnswer} = JSON.parse(sessionStorage.getItem('answers'))
+            return `You got ${correctAnswer} correct answer${correctAnswer <= 1 ? '' : 's'}`
+        }
+        return `You got 0 correct answers}`
     }
 
     render() {
-        console.log('REDER')
         return (
             <div>
                 <div>

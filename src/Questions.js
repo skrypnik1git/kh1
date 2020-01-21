@@ -256,15 +256,31 @@ class Checkbox extends Component {
 }
 
 class RadioInput extends Component {
+    state = {}
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.initialValue && !state.checkedFields) {
+            const checkedFields = props.initialValue;
+            return { checkedFields };
+        }
+        return null;
+    }
+
+    onChange = e => {
+        const { value } = e.currentTarget;
+        let { checkedFields } = this.state;
+        checkedFields = value;
+        this.setState({ checkedFields });
+    }
+    
     render() {
         const { questionText, labels, name } = this.props;
-        // const name = this.props.questionText.replace(/ /g, '')
-        // const selectedValue = localStorage.getItem(name);
+        const { checkedFields } = this.state;
         return (
             <div>
                 <p>{questionText}</p>
                 {labels.map( (label,idx) => {
-                    // const isChecked = Number(selectedValue) === label
+                    const isChecked = String(checkedFields) === String(label)
                     return (
                         <div key={`${name}${idx}`}>
                             <label htmlFor={`answer_${label}`}>{label}</label>
@@ -273,7 +289,8 @@ class RadioInput extends Component {
                                 value={label} 
                                 name={name} 
                                 id={`answer_${label}`}
-                                // checked={isChecked}
+                                onChange={this.onChange}
+                                checked={isChecked}
                             ></input>
                         </div>
                     )
@@ -284,15 +301,39 @@ class RadioInput extends Component {
 }
 
 class Select extends Component {
+    state = {}
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.initialValue && !state.checkedFields) {
+            const checkedFields = props.initialValue;
+            return { checkedFields };
+        }
+        return null;
+    }
+
+    onChange = e => {
+        const { value } = e.currentTarget;
+        let { checkedFields } = this.state;
+        checkedFields = value
+        this.setState({ checkedFields });
+    }
+    
     render() {
         const { questionText, options, name } = this.props;
+        const { checkedFields } = this.state;
         return (
             <div>
                 <p>{questionText}</p>
-                <select name={name} defaultValue={''}>
+                <select name={name} value={checkedFields ? checkedFields : ''} onChange={this.onChange}>
                     <option key={`${name}_placeholder`} value='' disabled >Choose your answer</option>
                     {options.map( (option,idx) => {
-                       return <option key={`${name}${idx}`} value={option}>{option} </option>
+                       return <option 
+                                key={`${name}${idx}`} 
+                                value={option}
+                                
+                              >
+                                {option}
+                              </option>
                     })}
                 </select>
             </div>
