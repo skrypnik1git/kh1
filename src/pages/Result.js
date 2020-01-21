@@ -11,7 +11,7 @@ export default class Result extends Component {
             const {correctAnswer} = JSON.parse(sessionStorage.getItem('answers'))
             return `You got ${correctAnswer} correct answer${correctAnswer <= 1 ? '' : 's'}`
         }
-        return `You got 0 correct answers}`
+        return `You got 0 correct answers`
     }
 
     render() {

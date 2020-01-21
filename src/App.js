@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Questions from './Questions.js'
-import Result from './Result.js'
+import Questions from './pages/Questions.js'
+import Result from './pages/Result.js'
 import { BrowserRouter, Route } from 'react-router-dom';
 
 
