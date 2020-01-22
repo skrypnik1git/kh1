@@ -5,7 +5,7 @@ import Select from '../components/Select.js'
 import RadioInput from '../components/RadioInput.js'
 import Checkbox from '../components/Checkbox.js'
 import TextInput from '../components/TextInput.js'
-import { questionsList } from '../questionsList.js'
+import { questionsList } from '../helpers/questionsList.js'
 import { getAnswers } from '../helpers'
 
 
@@ -17,11 +17,9 @@ class Questions extends Component {
 
     componentDidMount() {
         const initialValues = JSON.parse(sessionStorage.getItem('answers'));
-        if (!initialValues) {
-            return false;
+        if (initialValues) {
+            this.setState({ initialValues });
         }
-
-        this.setState({ initialValues });
     }
 
 
@@ -35,9 +33,12 @@ class Questions extends Component {
     onSubmit = e => {
         e.preventDefault()
         const {undoneQuestions} = getAnswers(e, questionsList)
-        console.log(undoneQuestions)
-        undoneQuestions > 0 ?
-        this.setState({isModalOpen: true}) : this.props.history.push('/result');
+
+        if (undoneQuestions > 0) {
+            this.setState({isModalOpen: true})
+        } else { 
+            this.props.history.push('/result');
+        }
     }
 
     saveToSessionStorage = answers => {
@@ -54,26 +55,26 @@ class Questions extends Component {
 
         return (
             <>
-            <form onSubmit={this.onSubmit} onChange={this.onChange} className='d-flex flex-column justify-content-center align-items-center'>
-                { 
-                    questionsList.map( (question,idx) => {
-                        const TagName = questionsMap[question.type];
-                        const { initialValues } = this.state;
-                        const initialValue = initialValues[question.name];
+                <form onSubmit={this.onSubmit} onChange={this.onChange} className='d-flex flex-column justify-content-center align-items-center'>
+                    { 
+                        questionsList.map( (question,idx) => {
+                            const TagName = questionsMap[question.type];
+                            const { initialValues } = this.state;
+                            const initialValue = initialValues[question.name];
 
-                        return <TagName 
-                                    {...question} 
-                                    initialValue={initialValue} 
-                                    key={`${question.type}${idx}`}
-                                />
-                    })
-                }
-                <button className='btn btn-success btn-lg border-white mt-5 mb-5'>Get Result</button>
-            </form>
-            <ModalWindow 
-            isOpen={this.state.isModalOpen}
-            onClose={() => this.showModal(false)}
-            />
+                            return <TagName 
+                                        {...question} 
+                                        initialValue={initialValue} 
+                                        key={`${question.type}${idx}`}
+                                    />
+                        })
+                    }
+                    <button className='btn btn-success btn-lg border-white mt-5 mb-5'>Get Result</button>
+                </form>
+                <ModalWindow 
+                    isOpen={this.state.isModalOpen}
+                    onClose={() => this.showModal(false)}
+                />
             </>
     )}
 }
