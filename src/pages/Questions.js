@@ -6,7 +6,7 @@ import RadioInput from '../components/RadioInput.js'
 import Checkbox from '../components/Checkbox.js'
 import TextInput from '../components/TextInput.js'
 import { questionsList } from '../questionsList.js'
-import { getAnswers } from '../helpers/index.js'
+import { getAnswers } from '../helpers'
 
 
 class Questions extends Component {
@@ -54,7 +54,7 @@ class Questions extends Component {
 
         return (
             <>
-            <form onSubmit={this.onSubmit} onChange={this.onChange}>
+            <form onSubmit={this.onSubmit} onChange={this.onChange} className='d-flex flex-column justify-content-center align-items-center'>
                 { 
                     questionsList.map( (question,idx) => {
                         const TagName = questionsMap[question.type];
@@ -68,7 +68,7 @@ class Questions extends Component {
                                 />
                     })
                 }
-                <button>Submit</button>
+                <button className='btn btn-success btn-lg border-white mt-5 mb-5'>Get Result</button>
             </form>
             <ModalWindow 
             isOpen={this.state.isModalOpen}

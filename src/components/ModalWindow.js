@@ -11,13 +11,13 @@ export default class ModalWindow extends Component {
                     </div>
                     <div className="confirmation">
                         <div className="text-for-cover">
-                            Delete this Task?
+                            All unanswered questions will be counted as uncorrect. Do you want to continue?
                         </div>
                         <div className="cover-btns">
-                            <Link className="btn blue-btn" to='/result'>
-                                Ok
+                            <Link className="btn btn-success btn-lg border-white" to='/result'>
+                                Yes
                             </Link >
-                            <input type="button" value="Cancel" className="btn blue-red" onClick={onClose}>
+                            <input type="button" value="Cancel" className="btn btn-danger btn-lg border-white" onClick={onClose}>
                             </input>
                         </div>
                     </div>

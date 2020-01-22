@@ -22,9 +22,9 @@ export default class Select extends Component {
         const { questionText, options, name } = this.props;
         const { checkedFields } = this.state;
         return (
-            <div>
-                <p>{questionText}</p>
-                <select name={name} value={checkedFields ? checkedFields : ''} onChange={this.onChange}>
+            <div className='row mt-5 questionContainer w-100 mh-200px col-11 col-md-8 flex-column justify-content-center align-items-center'>
+                <p className='w-75 text-break text-center mt-2 mb-4 font-weight-bold'>{questionText}</p>
+                <select name={name} value={checkedFields ? checkedFields : ''} onChange={this.onChange} className='form-control w-50'>
                     <option key={`${name}_placeholder`} value='' disabled >Choose your answer</option>
                     {options.map( (option,idx) => {
                        return <option 
