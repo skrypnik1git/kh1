@@ -16,11 +16,6 @@ export const getAnswers = (e, questionsList) => {
             } else {
                 answers.uncorrectAnswer += 1;
             }
-            // field.value ?
-            // field.value === correctAnswer ?
-            // answers.correctAnswer++ : answers.uncorrectAnswer++
-            // :
-            // answers.undoneQuestions++
         },
         checkbox: (fields, fieldName, correctAnswer) => {
             answers[fieldName] = [];
@@ -40,12 +35,6 @@ export const getAnswers = (e, questionsList) => {
                 answers.uncorrectAnswer +=1;
             }
 
-            // answers[fieldName].length ?
-            // checkAnswersForCheckbox(answers[fieldName], correctAnswer) ?
-            // answers.correctAnswer++ : answers.uncorrectAnswer++
-            // :
-            // answers.undoneQuestions++
-
             // Transform answers array to string
             answers[fieldName] = answers[fieldName].join(',')
         },
@@ -53,20 +42,26 @@ export const getAnswers = (e, questionsList) => {
             for (let i = 0; i < fields.length; i++) {
                 if (fields[i].checked) {
                     answers[fieldName] = fields[i].value
-                    fields[i].value === correctAnswer ?
-                    answers.correctAnswer++ : answers.uncorrectAnswer++
-                    return false;
-                }
+                    if (fields[i].value === correctAnswer) {
+                        answers.correctAnswer += 1; 
+                    } else {
+                        answers.uncorrectAnswer +=1;
+                    }
+                    return false
+                }  
             }
-            answers.undoneQuestions++
+            answers.undoneQuestions += 1;
         },
         select: (fields, fieldName, correctAnswer) => {
             for (let i = 0; i < fields.length; i++) {
                 if (fields[i].selected && fields[i].value ) {
                     answers[fieldName]= fields[i].value
-                    fields[i].value === correctAnswer ?
-                    answers.correctAnswer++ : answers.uncorrectAnswer++
-                    return
+                    if (fields[i].value === correctAnswer) {
+                        answers.correctAnswer += 1; 
+                    } else {
+                        answers.uncorrectAnswer +=1;
+                    }
+                    return false
                 }
             }
             answers.undoneQuestions++
@@ -90,11 +85,6 @@ const isAllAnswersCorrect = (userAnswers, correctAnswers) => {
         if (correctAnswers.includes(answer)) {
             countOfCorrectAnswers += 1;
         }
-        // correctAnswers.forEach(correctAnswer => {
-        //     if (asnwer === correctAnswer) {
-        //         countOfCorrectAnswers += 1;
-        //     }
-        // })
     })
     
     return countOfCorrectAnswers === correctAnswers.length;
